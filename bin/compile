@@ -377,14 +377,15 @@ cp "$basedir/../conf/nginx/base.conf.erb" "conf/nginx.conf.erb"
 cp "$basedir/../conf/php/php-fpm.conf" "/app/vendor/php/etc/php-fpm.conf"
 cp "$basedir/../conf/php/php.ini" "/app/vendor/php/etc/php.ini"
 
-pear config-set php_ini /app/vendor/php/etc/php.ini &> /dev/null
+
+pear config-set php_ini /app/.heroku/php/etc/php/php.ini &> /dev/null
 
 for conf in $PHP_EXTRA_CONFIG; do
-    echo "$conf" >> "/app/vendor/php/etc/php.ini"
+    echo "$conf" >> "/app/.heroku/php/etc/php/php.ini"
 done
 
 for include in $PHP_INCLUDES; do
-    cp "$BUILD_DIR/$include" "/app/vendor/php/etc/conf.d/"
+    cp "$BUILD_DIR/$include" "/app/.heroku/php/etc/conf.d/"
 done
 
 # Detect PHP framework
@@ -490,7 +491,7 @@ if [[ -z \${WEB_CONCURRENCY:-} ]]; then
     fi
 
     # determine number of FPM processes to run
-    read WEB_CONCURRENCY php_memory_limit <<<\$(php -c "/app/vendor/php/etc/php.ini" /app/conf/autotune.php -y "/app/vendor/php/etc/php-fpm.conf" -t "\$DOCUMENT_ROOT" "\$ram")
+    read WEB_CONCURRENCY php_memory_limit <<<\$(php -c "/app/.heroku/php/etc/php/php.ini" /app/conf/autotune.php -y "/app/.heroku/php/etc/php-fpm.conf" -t "\$DOCUMENT_ROOT" "\$ram")
     [[ \$WEB_CONCURRENCY -lt 1 ]] && WEB_CONCURRENCY=1
     export WEB_CONCURRENCY
 
